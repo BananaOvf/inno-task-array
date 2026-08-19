@@ -19,10 +19,6 @@ public class ArrayLineValidatorImpl implements ArrayLineValidator {
             return false;
         }
 
-        if (line.isBlank()) {
-            return true;
-        }
-
         Pattern pattern = ArrayFormatConstant.VALID_LINE_PATTERN;
         Matcher matcher = pattern.matcher(line);
         return matcher.matches();

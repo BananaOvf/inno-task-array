@@ -22,16 +22,44 @@ class DoubleArrayParserImplTest {
 
     private static Stream<Arguments> provideValidLines() {
         return Stream.of(
-                Arguments.of("42", new double[]{42.0}),
-                Arguments.of("3.14", new double[]{3.14}),
-                Arguments.of("3,14", new double[]{3.14}),
-                Arguments.of("-5", new double[]{-5.0}),
-                Arguments.of("1; 2; 3", new double[]{1.0, 2.0, 3.0}),
+                Arguments.of("", new double[]{}),
+                Arguments.of("   ", new double[]{}),
+                Arguments.of("\t", new double[]{}),
+                Arguments.of(" \t ", new double[]{}),
+
+                Arguments.of(";", new double[]{}),
+                Arguments.of(";;", new double[]{}),
+                Arguments.of(" ; ; ", new double[]{}),
+                Arguments.of(" ;\t; ", new double[]{}),
+
+                Arguments.of("0", new double[]{0.0}),
+                Arguments.of("00", new double[]{0.0}),
+                Arguments.of("1.0", new double[]{1.0}),
+                Arguments.of("1,0", new double[]{1.0}),
+                Arguments.of("  -5  ", new double[]{-5.0}),
+                Arguments.of("-3.14", new double[]{-3.14}),
+                Arguments.of("-3,14", new double[]{-3.14}),
+
+                Arguments.of("1;2;3", new double[]{1.0, 2.0, 3.0}),
+                Arguments.of("1; -2; 3.5; -4,7", new double[]{1.0, -2.0, 3.5, -4.7}),
                 Arguments.of(" 1 ; 2,5 ; -3.2 ", new double[]{1.0, 2.5, -3.2}),
-                Arguments.of("; 1; 2;", new double[]{1.0, 2.0}),
+
+                Arguments.of("1;;2", new double[]{1.0, 2.0}),
+                Arguments.of("1; ; 2", new double[]{1.0, 2.0}),
+                Arguments.of("1;;;2", new double[]{1.0, 2.0}),
+                Arguments.of(";;1;;", new double[]{1.0}),
+                Arguments.of("1;;;", new double[]{1.0}),
+                Arguments.of(";;;1", new double[]{1.0}),
+                Arguments.of("; ; ; 1 ; ;", new double[]{1.0}),
+
+                Arguments.of(";1", new double[]{1.0}),
                 Arguments.of("1;", new double[]{1.0}),
-                Arguments.of("1     ;     2", new double[]{1.0, 2.0}),
-                Arguments.of("   ", new double[]{})
+                Arguments.of(";1;", new double[]{1.0}),
+                Arguments.of(";1;2;", new double[]{1.0, 2.0}),
+
+                Arguments.of("1\t;\t2", new double[]{1.0, 2.0}),
+                Arguments.of("1;2;\t3", new double[]{1.0, 2.0, 3.0}),
+                Arguments.of(" \t 1 \t ; \t 2 \t ", new double[]{1.0, 2.0})
         );
     }
 
@@ -50,9 +78,50 @@ class DoubleArrayParserImplTest {
     @ParameterizedTest
     @NullSource
     @ValueSource(strings = {
-            "1y1 21 32",
+            "1 2",
+            " 1 2 ",
+            "1\t2",
+
             "1, 2, 3",
-            "1;;2"
+            "1,2,3",
+            "1, 2; 3",
+
+            "1.2.3",
+            "1,2,3",
+            "1; 2.3.4",
+            "1; 2,3,4",
+            "1; 2.3,4",
+            "1; 2,3.4",
+
+            ".5",
+            "5.",
+            "-.",
+            "1; .5",
+            "1; 5.",
+
+            "+5",
+            "1; +2",
+
+            "1e3",
+            "1; 2e3",
+
+            "1y1 21 32",
+            "1; two",
+            "1; 2_000",
+            "1; 0x10",
+            "1; NaN",
+            "1; Infinity",
+
+            "1; - 2",
+            "- 5",
+
+            "1; 2 3",
+            "1; 2; 3 4",
+            "1; 2; 3,4,5",
+
+            "1; 2; 3abc",
+            "abc1",
+            "1; 2; #"
     })
     void parseShouldThrowForInvalidLines(String line) {
         // given
