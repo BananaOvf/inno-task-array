@@ -2,25 +2,25 @@ package org.litvinov.taskarray.util;
 
 import java.util.regex.Pattern;
 
-public final class ArrayFormatConstants {
+public final class ArrayFormatConstant {
 
-    public static final String DELIMITER = ";";
-    public static final String NUMBER_PATTERN = "-?\\d+(?:[.,]\\d+)?";
+    private static final String DELIMITER = ";";
+    private static final String NUMBER_REGEX = "-?\\d+(?:[.,]\\d+)?";
 
     private static final String SPACES = "\\s*";
     private static final String QUOTED_DELIMITER = Pattern.quote(DELIMITER);
     private static final String SEPARATOR = SPACES + QUOTED_DELIMITER + SPACES;
 
-    public static final Pattern DELIMITER_PATTERN = Pattern.compile(SEPARATOR);
+    public static final Pattern NUMBER_PATTERN = Pattern.compile(NUMBER_REGEX);
 
     public static final Pattern VALID_LINE_PATTERN = Pattern.compile(
             "^" + SPACES +
                     "(?:" + QUOTED_DELIMITER + SPACES + ")?" +
-                    NUMBER_PATTERN +
-                    "(?:" + SEPARATOR + NUMBER_PATTERN + ")*" +
+                    NUMBER_REGEX +
+                    "(?:" + SEPARATOR + NUMBER_REGEX + ")*" +
                     SPACES + QUOTED_DELIMITER + "?" + SPACES + "$"
     );
 
-    private ArrayFormatConstants() {
+    private ArrayFormatConstant() {
     }
 }

@@ -4,12 +4,12 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.litvinov.taskarray.exception.InvalidLineException;
 import org.litvinov.taskarray.parser.DoubleArrayParser;
-import org.litvinov.taskarray.util.ArrayFormatConstants;
+import org.litvinov.taskarray.util.ArrayFormatConstant;
 import org.litvinov.taskarray.validator.ArrayLineValidator;
 
-import java.util.Arrays;
-import java.util.regex.Pattern;
-
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Matcher;
 
 public class DoubleArrayParserImpl implements DoubleArrayParser {
     private static final Logger logger = LogManager.getLogger();
@@ -28,34 +28,21 @@ public class DoubleArrayParserImpl implements DoubleArrayParser {
             throw new InvalidLineException("Line must not be null");
         }
 
-        if (line.isBlank()) {
-            return new double[0];
-        }
-
         if (!validator.isValid(line)) {
             throw new InvalidLineException("Invalid array line: " + line);
         }
 
-        String strippedLine = line.strip();
-        Pattern delimiter = ArrayFormatConstants.DELIMITER_PATTERN;
-        String[] tokens = delimiter.split(strippedLine);
+        String normalizedLine = line.replace(',', '.');
+        Matcher matcher = ArrayFormatConstant.NUMBER_PATTERN.matcher(normalizedLine);
 
-        double[] result = new double[tokens.length];
-        int index = 0;
-
-        try {
-            for (String token : tokens) {
-                if (!token.isBlank()) {
-                    String strippedToken = token.strip();
-                    String normalizedToken = strippedToken.replace(',', '.');
-                    result[index] = Double.parseDouble(normalizedToken);
-                    index++;
-                }
-            }
-        } catch (NumberFormatException e) {
-            throw new InvalidLineException("Invalid number in line: " + line, e);
+        List<Double> numbers = new ArrayList<>();
+        while (matcher.find()) {
+            double number = Double.parseDouble(matcher.group());
+            numbers.add(number);
         }
 
-        return Arrays.copyOf(result, index);
+        return numbers.stream()
+                .mapToDouble(Double::doubleValue)
+                .toArray();
     }
 }
