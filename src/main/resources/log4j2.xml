@@ -1,44 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Configuration status="warn">
+<Configuration status="WARN">
     <Properties>
-        <property name="LOG_DIR">logs</property>
-        <property name="ARCHIVE_LOG_DIR">${LOG_DIR}/archive</property>
-        <property name="pattern_file">%d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n</property>
-        <property name="pattern_console">%d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n</property>
+        <Property name="LOG_DIR">logs</Property>
+        <Property name="LOG_PATTERN">%d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n</Property>
     </Properties>
+
     <Appenders>
         <Console name="Console" target="SYSTEM_OUT">
-            <PatternLayout pattern="${pattern_console}"/>
+            <PatternLayout pattern="${LOG_PATTERN}"/>
         </Console>
-        <File name="File1" fileName="${LOG_DIR}/text.log" bufferedIO="true">
-            <PatternLayout pattern="${pattern_file}"/>
-        </File>
-        <RollingFile name="FileRolling" fileName="${LOG_DIR}/text_roll.log" append="true"
-                     filePattern="${LOG_DIR}/${date:yyyy-MM-dd}/%d{yyyy-MM-dd_HH-mm}_%i.log">
-            <PatternLayout pattern="${pattern_file}"/>
+
+        <RollingFile name="RollingFile"
+                     fileName="${LOG_DIR}/app.log"
+                     filePattern="${LOG_DIR}/%d{yyyy-MM-dd}/app-%i.log"
+                     append="true">
+            <PatternLayout pattern="${LOG_PATTERN}"/>
             <Policies>
-                <SizeBasedTriggeringPolicy size="25 KB"/>
-            </Policies>
-            <DefaultRolloverStrategy max="10"/>
-        </RollingFile>
-        <RollingFile name="FileZip" fileName="${LOG_DIR}/text_arch.log" append="true"
-                     filePattern="${ARCHIVE_LOG_DIR}/${date:yyyy-MM-dd}/%d{yyyy-MM-dd_HH-mm}_%i.log.zip">
-            <PatternLayout pattern="${pattern_file}"/>
-            <BurstFilter level="INFO" rate="16" maxBurst="100"/>
-            <Policies>
-                <SizeBasedTriggeringPolicy size="25 KB"/>
+                <SizeBasedTriggeringPolicy size="10 MB"/>
             </Policies>
             <DefaultRolloverStrategy max="10"/>
         </RollingFile>
     </Appenders>
+
     <Loggers>
-        <Logger name="Log_File" level="trace" additivity="false">
-            <AppenderRef ref="File1"/>
-        </Logger>
         <Root level="debug">
-            <!--<Appender-ref ref="FileRolling"/>
-            <Appender-ref ref="FileZip"/>-->
-            <Appender-ref ref="Console" level="trace"/>
+            <AppenderRef ref="Console"/>
+            <AppenderRef ref="RollingFile"/>
         </Root>
     </Loggers>
 </Configuration>
