@@ -228,4 +228,33 @@ class DoubleArrayWrapperTest {
         // then
         assertTrue(result.contains("DoubleArrayWrapper"));
     }
+
+    @Test
+    void constructorShouldCopySourceArray() throws ArrayWrapperException {
+        // given
+        DoubleArrayWrapper wrapper = new DoubleArrayWrapper(VALID_ARRAY_2);
+
+        // when
+        VALID_ARRAY_2[0] = 99.0;
+        VALID_ARRAY_2[1] = 88.0;
+
+        // then
+        assertEquals(1.0, wrapper.get(0), 0.0001);
+        assertEquals(2.0, wrapper.get(1), 0.0001);
+        assertEquals(3.0, wrapper.get(2), 0.0001);
+    }
+
+    @Test
+    void toArrayShouldReturnNewArrayInstance() throws ArrayWrapperException {
+        // given
+        DoubleArrayWrapper wrapper = new DoubleArrayWrapper(VALID_ARRAY_1);
+
+        // when
+        double[] firstCall = wrapper.toArray();
+        double[] secondCall = wrapper.toArray();
+
+        // then
+        assertNotSame(firstCall, secondCall);
+        assertNotSame(firstCall, wrapper.toArray());
+    }
 }
